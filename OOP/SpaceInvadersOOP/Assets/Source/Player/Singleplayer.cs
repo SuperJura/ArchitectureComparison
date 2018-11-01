@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
 public class Singleplayer : IPlayer
 {
-    const float MIN_FOV = 40;
-    const float MAX_FOV = 60;
+    const float MIN_FOV = 60;
+    const float MAX_FOV = 80;
 
     IInput device;
     
@@ -16,14 +17,21 @@ public class Singleplayer : IPlayer
 
     float horizontalRotation;
     float verticalRotation;
+    float boostSpeed = 1;
+    bool shotRight = false;
+
+    GameObject bulletTemplate;
+    List<GameObject> bullets;
 
     public void init(GameObject playerObj, IInput inputDevice)
     {
         this.device = inputDevice;
         playerControler = playerObj.GetComponent<CharacterController>();
         cmCamera = GameObject.Instantiate(Resources.Load<CinemachineVirtualCamera>("Camera"));
+        bulletTemplate = Resources.Load<GameObject>("Bullet");
         cmCamera.Follow = playerControler.transform;
         cmCamera.LookAt = playerControler.transform;
+        bullets = new List<GameObject>();
     }
 
     public void move(Vector3 direction)
@@ -33,14 +41,25 @@ public class Singleplayer : IPlayer
 
     public void shoot()
     {
-        Debug.Log("Shooting");
+        Vector3 pos = playerControler.transform.position;
+        pos += playerControler.transform.right * (shotRight ? 10 : -10);
+        shotRight = !shotRight; 
+        GameObject bullet = GameObject.Instantiate(bulletTemplate,  pos, playerControler.transform.rotation);
+        bullets.Add(bullet);
     }
 
     public void updatePlayer()
     {
         if(device.getFire()) shoot();
-        float boost = device.getBoost() ? 10 : 1;
-        Vector3 moveDir = playerControler.transform.forward * speed * boost;
+        if(device.getBoost())
+        {
+            boostSpeed = Mathf.Clamp(boostSpeed + Time.deltaTime * 2, 10, 100);
+        }
+        else
+        {
+            boostSpeed = 1;
+        }
+        Vector3 moveDir = playerControler.transform.forward * speed * boostSpeed;
 
         horizontalRotation = Mathf.MoveTowards(horizontalRotation, device.getHorizontal(), agility);
         verticalRotation = Mathf.MoveTowards(verticalRotation, device.getVertical(), agility);
@@ -58,5 +77,9 @@ public class Singleplayer : IPlayer
             fov = Mathf.MoveTowards(fov, MIN_FOV, Time.deltaTime * 100);
         }
         cmCamera.m_Lens.FieldOfView = fov;
+        foreach (var bullet in bullets)
+        {
+            bullet.transform.position += bullet.transform.forward * Time.deltaTime * 1000;
+        }
     }
 }

@@ -1,4 +1,8 @@
-﻿/* ---------------------------------------
+﻿#pragma warning disable 0168 // variable declared but not used.
+#pragma warning disable 0219 // variable assigned but not used.
+#pragma warning disable 0414 // private field assigned but not used.
+#pragma warning disable 0649
+/* ---------------------------------------
  * Author: Martin Pane (martintayx@gmail.com) (@tayx94)
  * Project: Graphy - Ultimate Stats Monitor
  * Date: 05-Dec-17
