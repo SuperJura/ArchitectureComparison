@@ -12,7 +12,7 @@ public class EnemySpawner : MonoBehaviour, ISpawner
     public void init(ISpawnData data, float spawnTimeOffset)
     {
         this.data = data;
-        speed = Random.Range(5f, 15f);
+        speed = Random.Range(5f, 10f);
         timeToSpawn = spawnTimeOffset;
     }
 

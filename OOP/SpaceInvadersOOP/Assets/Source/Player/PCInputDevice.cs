@@ -2,12 +2,9 @@ using UnityEngine;
 
 public class PCInputDevice : IInput
 {
-    float fireCooldown = 0;
-
     public bool getFire()
     {
-        if(fireCooldown <= 0) return Input.GetMouseButtonDown(0);
-        return false;
+        return Input.GetMouseButton(0);
     }
 
     public float getHorizontal()
@@ -28,7 +25,6 @@ public class PCInputDevice : IInput
 
     public void updateDevice()
     {
-        if(fireCooldown > 0) fireCooldown -= Time.deltaTime;
     }
 
     public bool getBoost()

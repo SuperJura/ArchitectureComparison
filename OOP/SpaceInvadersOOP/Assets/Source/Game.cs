@@ -6,19 +6,27 @@ public class Game : MonoBehaviour
 {
     IPlayer player;
     IInput device;
+    InterfaceManager uiManager;
 
     ISpawner[] spawners;
+
+    public static Game instance;
+
+    public int enemyDestroyed = 0;
+    public int needToDestroyForNextWeapon = 50; 
 
     void Start()
     {
         player = new Singleplayer();
         device = new PCInputDevice();
+        uiManager = new InterfaceManager();
 
         player.init(GameObject.Find("Player"), device);
+        uiManager.init();
         initEnemySpawners();
+        instance = this;
     }
 
-    // Update is called once per frame
     void Update()
     {
         device.updateDevice();
@@ -28,6 +36,8 @@ public class Game : MonoBehaviour
         {
             spawners[i].update();
         }
+        Debug.Log(enemyDestroyed);
+        uiManager.update();
     }
 
     void initEnemySpawners()
@@ -44,10 +54,23 @@ public class Game : MonoBehaviour
             Vector3 pos = Random.onUnitSphere * (smallRadius + length);
             GameObject go = new GameObject("spawn " + i);
             ISpawner spawner = go.AddComponent<EnemySpawner>();
-            spawner.init(easyEnemies, i < 2000 ? 0 : (5f + (i - 2000) / 100f));
+            spawner.init(easyEnemies, i < numOfSpawners / 2 ? 0 : (5f + (i - numOfSpawners) / 100f));
 
             go.transform.position = pos;
             spawners[i] = spawner;
+        }
+    }
+
+    public void onEnemyDestroy()
+    {
+        enemyDestroyed++;
+        if(enemyDestroyed == needToDestroyForNextWeapon)
+        {
+            if(needToDestroyForNextWeapon == 50)
+            {
+                player.changeWeapon(new Rifle(0.001f));
+            }
+            needToDestroyForNextWeapon = 500;
         }
     }
 }

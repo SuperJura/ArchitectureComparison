@@ -18,20 +18,42 @@ public class Singleplayer : IPlayer
     float horizontalRotation;
     float verticalRotation;
     float boostSpeed = 1;
-    bool shotRight = false;
 
-    GameObject bulletTemplate;
-    List<GameObject> bullets;
+    IWeapon currentWeapon;
+
+    public void changeWeapon(IWeapon newWeapon)
+    {
+        currentWeapon.destroy();
+        currentWeapon = newWeapon;
+    }
+
+    public void changeBullet(IBullet newBullet)
+    {
+        currentWeapon.changeBullet(newBullet);
+    }
+
+    public IInput getDevice()
+    {
+        return device;
+    }
+
+    public GameObject getPlayerObject()
+    {
+        return playerControler.gameObject;
+    }
 
     public void init(GameObject playerObj, IInput inputDevice)
     {
         this.device = inputDevice;
         playerControler = playerObj.GetComponent<CharacterController>();
         cmCamera = GameObject.Instantiate(Resources.Load<CinemachineVirtualCamera>("Camera"));
-        bulletTemplate = Resources.Load<GameObject>("Bullet");
+        
         cmCamera.Follow = playerControler.transform;
         cmCamera.LookAt = playerControler.transform;
-        bullets = new List<GameObject>();
+
+        // currentWeapon = new Rifle(0.15f);
+        currentWeapon = new Beam();
+        currentWeapon.init();
     }
 
     public void move(Vector3 direction)
@@ -39,18 +61,10 @@ public class Singleplayer : IPlayer
         playerControler.Move(direction);
     }
 
-    public void shoot()
-    {
-        Vector3 pos = playerControler.transform.position;
-        pos += playerControler.transform.right * (shotRight ? 10 : -10);
-        shotRight = !shotRight; 
-        GameObject bullet = GameObject.Instantiate(bulletTemplate,  pos, playerControler.transform.rotation);
-        bullets.Add(bullet);
-    }
 
     public void updatePlayer()
     {
-        if(device.getFire()) shoot();
+        currentWeapon.updateWeapon(this);
         if(device.getBoost())
         {
             boostSpeed = Mathf.Clamp(boostSpeed + Time.deltaTime * 2, 10, 100);
@@ -77,9 +91,5 @@ public class Singleplayer : IPlayer
             fov = Mathf.MoveTowards(fov, MIN_FOV, Time.deltaTime * 100);
         }
         cmCamera.m_Lens.FieldOfView = fov;
-        foreach (var bullet in bullets)
-        {
-            bullet.transform.position += bullet.transform.forward * Time.deltaTime * 1000;
-        }
     }
 }
