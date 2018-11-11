@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
+    public const int NUM_OF_ENEMIES = 5000;
     IPlayer player;
     IInput device;
     InterfaceManager uiManager;
@@ -13,7 +14,9 @@ public class Game : MonoBehaviour
     public static Game instance;
 
     public int enemyDestroyed = 0;
-    public int needToDestroyForNextWeapon = 50; 
+    
+    public readonly float[] neededPercentForNextWeapon = new float[] {0.01f, 0.2f, 0.6f, 0.9f};
+    public int currnetWeaponIndex = -1;
 
     void Start()
     {
@@ -36,7 +39,7 @@ public class Game : MonoBehaviour
         {
             spawners[i].update();
         }
-        Debug.Log(enemyDestroyed);
+        // Debug.Log(enemyDestroyed);
         uiManager.update();
     }
 
@@ -45,16 +48,15 @@ public class Game : MonoBehaviour
         float bigRadius = 4000;
         float smallRadius = 2000;
         ISpawnData easyEnemies = Resources.Load<EnemyDatabase>("EnemiesDatabases/Easy");
-        int numOfSpawners = 5000;
-        spawners = new ISpawner[numOfSpawners];
-        for (int i = 0; i < numOfSpawners; i++)
+        spawners = new ISpawner[NUM_OF_ENEMIES];
+        for (int i = 0; i < NUM_OF_ENEMIES; i++)
         {
             float delta = bigRadius - smallRadius;
             float length = delta * Random.value;
             Vector3 pos = Random.onUnitSphere * (smallRadius + length);
             GameObject go = new GameObject("spawn " + i);
             ISpawner spawner = go.AddComponent<EnemySpawner>();
-            spawner.init(easyEnemies, i < numOfSpawners / 2 ? 0 : (5f + (i - numOfSpawners) / 100f));
+            spawner.init(easyEnemies, i < NUM_OF_ENEMIES / 2 ? 0 : (5f + (i - NUM_OF_ENEMIES) / 100f));
 
             go.transform.position = pos;
             spawners[i] = spawner;
@@ -64,13 +66,35 @@ public class Game : MonoBehaviour
     public void onEnemyDestroy()
     {
         enemyDestroyed++;
-        if(enemyDestroyed == needToDestroyForNextWeapon)
+        float percent = enemyDestroyed / (float)NUM_OF_ENEMIES;
+        int newWeaponIndex = currnetWeaponIndex;
+        for (int i = 0; i < neededPercentForNextWeapon.Length; i++)
         {
-            if(needToDestroyForNextWeapon == 50)
+            if(percent >= neededPercentForNextWeapon[i])
+            {
+                newWeaponIndex = i;
+            }
+        }
+        if(newWeaponIndex != currnetWeaponIndex)
+        {
+            if(newWeaponIndex == 0)
             {
                 player.changeWeapon(new Rifle(0.001f));
             }
-            needToDestroyForNextWeapon = 500;
+            else if(newWeaponIndex == 1)
+            {
+                player.changeWeapon(new Beam());
+            }
+            else if(newWeaponIndex == 2)
+            {
+                player.changeWeapon(new Beam());
+            }
+            else if(newWeaponIndex == 3)
+            {
+                player.changeWeapon(new Beam());
+            }
+
+            currnetWeaponIndex = newWeaponIndex;
         }
     }
 }

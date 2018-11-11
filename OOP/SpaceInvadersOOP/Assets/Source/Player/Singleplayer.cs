@@ -10,7 +10,7 @@ public class Singleplayer : IPlayer
     IInput device;
     
     float speed = 0.1f;
-    float agility = 0.02f;
+    float agility = 0.2f;
 
     CharacterController playerControler;
     CinemachineVirtualCamera cmCamera;
@@ -51,8 +51,8 @@ public class Singleplayer : IPlayer
         cmCamera.Follow = playerControler.transform;
         cmCamera.LookAt = playerControler.transform;
 
-        // currentWeapon = new Rifle(0.15f);
-        currentWeapon = new Beam();
+        currentWeapon = new Rifle(0.15f);
+        // currentWeapon = new Beam();
         currentWeapon.init();
     }
 

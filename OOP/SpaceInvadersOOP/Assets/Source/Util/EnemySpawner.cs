@@ -8,6 +8,7 @@ public class EnemySpawner : MonoBehaviour, ISpawner
 
     bool wentToSpawner = false;
     GameObject enemy;
+    bool spawned = false;
 
     public void init(ISpawnData data, float spawnTimeOffset)
     {
@@ -18,13 +19,14 @@ public class EnemySpawner : MonoBehaviour, ISpawner
 
     public void update()
     {
-        if(timeToSpawn <= 0 && enemy == null)
+        if(timeToSpawn <= 0 && enemy == null && !spawned)
         {
             enemy = Instantiate(data.getRandomObject());
             enemy.transform.SetParent(transform);
             Vector3 dir = transform.position - StationManager.getInstance().transform.position;
             enemy.transform.position = (transform.transform.position + dir) * 2;
             enemy.transform.LookAt(StationManager.getInstance().transform.position);
+            spawned = true;
         }
         timeToSpawn -= Time.deltaTime;
         if(enemy != null)
