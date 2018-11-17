@@ -15,7 +15,7 @@ public class Game : MonoBehaviour
 
     public int enemyDestroyed = 0;
     
-    public readonly float[] neededPercentForNextWeapon = new float[] {0.01f, 0.2f, 0.6f, 0.9f};
+    public readonly float[] neededPercentForNextWeapon = new float[] {0.01f, 0.2f, 0.9f};
     public int currnetWeaponIndex = -1;
 
     void Start()
@@ -87,11 +87,13 @@ public class Game : MonoBehaviour
             }
             else if(newWeaponIndex == 2)
             {
-                player.changeWeapon(new Beam());
-            }
-            else if(newWeaponIndex == 3)
-            {
-                player.changeWeapon(new Beam());
+                player.changeWeapon(new Beam(50, () =>
+                {
+                    foreach(var spawner in spawners)
+                    {
+                        spawner.destroy();
+                    }
+                }));
             }
 
             currnetWeaponIndex = newWeaponIndex;

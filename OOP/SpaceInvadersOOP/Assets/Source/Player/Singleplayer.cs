@@ -9,7 +9,7 @@ public class Singleplayer : IPlayer
 
     IInput device;
     
-    float speed = 0.1f;
+    float speed = 0.5f;
     float agility = 0.2f;
 
     CharacterController playerControler;
@@ -52,7 +52,6 @@ public class Singleplayer : IPlayer
         cmCamera.LookAt = playerControler.transform;
 
         currentWeapon = new Rifle(0.15f);
-        // currentWeapon = new Beam();
         currentWeapon.init();
     }
 
@@ -60,7 +59,6 @@ public class Singleplayer : IPlayer
     {
         playerControler.Move(direction);
     }
-
 
     public void updatePlayer()
     {

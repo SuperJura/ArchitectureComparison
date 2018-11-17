@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Beam : IWeapon
@@ -9,8 +10,13 @@ public class Beam : IWeapon
 
     IBullet currentBeam;
 
-    public Beam()
+    int maxScale;
+    Action onMaxScale;
+
+    public Beam(int maxScale = 15, Action onMaxScale = null)
     {
+        this.maxScale = maxScale;
+        this.onMaxScale = onMaxScale;
         changeBullet(DEFAULT_BULLET);
     }
 
@@ -33,8 +39,13 @@ public class Beam : IWeapon
             }
             else
             {
-                float newScale = Mathf.Clamp(currentBeam.getObject().transform.localScale.x + Time.deltaTime, 1, 4f);
+                float newScale = Mathf.Clamp(currentBeam.getObject().transform.localScale.x + Time.deltaTime, 1, maxScale);
                 currentBeam.getObject().transform.localScale = new Vector3(newScale, newScale, 1);
+                if(Math.closeEnough(newScale, maxScale))
+                {
+                    if(onMaxScale != null) onMaxScale();
+                    onMaxScale = null;
+                }
             }
         }
         else

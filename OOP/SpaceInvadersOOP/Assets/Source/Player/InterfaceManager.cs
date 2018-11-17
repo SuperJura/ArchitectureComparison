@@ -33,7 +33,6 @@ public class InterfaceManager
         {
             fill = Math.getPercentBetween(percent, Game.instance.neededPercentForNextWeapon[currentPercent], Game.instance.neededPercentForNextWeapon[neededPercent]);
         }
-        Debug.Log(neededPercent + " " + percent + " " + Game.instance.neededPercentForNextWeapon[0]);
 
         expBar.fillAmount = fill;
     }

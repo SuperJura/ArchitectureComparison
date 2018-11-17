@@ -10,6 +10,11 @@ public class EnemySpawner : MonoBehaviour, ISpawner
     GameObject enemy;
     bool spawned = false;
 
+    public void destroy()
+    {
+        Destroy(enemy);
+    }
+
     public void init(ISpawnData data, float spawnTimeOffset)
     {
         this.data = data;
