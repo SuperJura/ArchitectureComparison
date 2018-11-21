@@ -17,6 +17,7 @@ public struct Enemy : IComponentData
 public struct Player : ISharedComponentData
 {
     public UnityEngine.GameObject cameraPoint;
+    public Cinemachine.CinemachineVirtualCamera camera;
 }
 
 public struct PlayerStats : IComponentData
