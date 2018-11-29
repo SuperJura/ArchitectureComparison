@@ -142,7 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyDestroyed: 0
-  needToDestroyForNextWeapon: 50
+  currnetWeaponIndex: -1
 --- !u!4 &142880519
 Transform:
   m_ObjectHideFlags: 0

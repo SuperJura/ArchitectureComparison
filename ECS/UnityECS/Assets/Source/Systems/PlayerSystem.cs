@@ -11,38 +11,19 @@ public class PlayerSystem : ComponentSystem
     const float MAX_FOV = 80;
 
     ComponentGroup group;
-    static MeshInstanceRenderer playerRenderer;
+    ComponentGroup beamGroup;
+
+    static MeshInstanceRenderer bulletRenderer;
+    static MeshInstanceRenderer beamRenderer;
 
     protected override void OnUpdate()
     {
-        if(playerRenderer.mesh == null)
+        if(group == null)
         {
-            playerRenderer = Bootstraper.getLookFromPrototype("Player");
-            group = GetComponentGroup(Bootstraper.playerArchtype.ComponentTypes);
-            
-            var entity = EntityManager.CreateEntity(Bootstraper.playerArchtype);
-            EntityManager.SetComponentData(entity, new Position(){Value = new float3(20, 20, 20)});
-            EntityManager.SetComponentData(entity, new Scale(){Value = new float3(0.1f, 0.1f, 0.1f)});
-            EntityManager.SetComponentData(entity, new Rotation(){Value = quaternion.identity});
-            EntityManager.SetComponentData(entity, new PlayerStats()
-            {
-                speed = 0.5f,
-                agility = 0.2f
-            });
-            EntityManager.SetSharedComponentData(entity, playerRenderer);
-
-            GameObject cameraFollow = new GameObject("CameraFolow");
-            cameraFollow.transform.position = new Vector3(20, 20, 20);
-            
-            CinemachineVirtualCamera camera = GameObject.Instantiate(Resources.Load<CinemachineVirtualCamera>("Camera"));
-            camera.Follow = cameraFollow.transform;
-            camera.LookAt = cameraFollow.transform;
-            
-            EntityManager.SetSharedComponentData(entity, new Player()
-            {
-                cameraPoint = cameraFollow,
-                camera = camera
-            });
+            group = GetComponentGroup(Bootstraper.playerTypes);
+            beamGroup = GetComponentGroup(Bootstraper.beamTypes);
+            bulletRenderer = Bootstraper.getLookFromPrototype("Bullet");
+            beamRenderer = Bootstraper.getLookFromPrototype("Beam");
         }
         
         var playerEntity = group.GetEntityArray()[0];
@@ -66,7 +47,6 @@ public class PlayerSystem : ComponentSystem
 
         playerRotation.Value = rotation;
         EntityManager.SetComponentData(playerEntity, playerRotation);
-
         
         bool boost = Input.GetKey(KeyCode.Space);
         float3 newPosition = playerPosition.Value + moveDir * (boost ? 10 : 1);
@@ -77,6 +57,63 @@ public class PlayerSystem : ComponentSystem
 
         player.cameraPoint.transform.position = new Vector3(newPosition.x, newPosition.y, newPosition.z);
         player.cameraPoint.transform.rotation = rotation;
+
+        if(Input.GetMouseButton(0))
+        {
+            // if(playerStats.currnetWeaponIndex == -1)
+            // {
+            //     playerStats.shootCooldown -= Time.deltaTime;
+            //     if(playerStats.shootCooldown <= 0)
+            //     {
+            //         float3 forward = math.forward(playerRotation.Value) * 200;
+            //         shootBullet(newPosition + forward + Math.right(playerRotation.Value) * 50, playerRotation.Value);
+            //         shootBullet(newPosition + forward + Math.right(playerRotation.Value) * -50, playerRotation.Value);
+            //         playerStats.shootCooldown = 0.15f;
+            //     }
+            // }
+            // else if(playerStats.currnetWeaponIndex == 0)
+            // {
+            //     float3 forward = math.forward(playerRotation.Value) * 200;
+            //     shootBullet(newPosition + forward + Math.right(playerRotation.Value) * 50, playerRotation.Value);
+            //     shootBullet(newPosition + forward + Math.right(playerRotation.Value) * -50, playerRotation.Value);
+            // }
+            // else if(playerStats.currnetWeaponIndex == 1)
+            {
+                var beamArray = beamGroup.GetEntityArray();
+                var beamEntity = Entity.Null;
+                if(beamArray.Length == 0)
+                {
+                    beamEntity = EntityManager.CreateEntity(Bootstraper.beamTypes);
+                    EntityManager.SetSharedComponentData(beamEntity, beamRenderer);
+                }
+                else
+                {
+                    beamEntity = beamArray[0];
+                }
+                
+                EntityManager.SetComponentData(beamEntity, new Position()
+                {
+                    Value = playerPosition.Value + math.forward(playerRotation.Value) * 2200
+                });
+                
+                var beamRotation = beamGroup.GetComponentDataArray<Rotation>()[0];
+                beamRotation.Value = math.mul(playerRotation.Value, quaternion.RotateX(math.radians(90)));
+                EntityManager.SetComponentData(beamEntity, beamRotation);
+
+                EntityManager.SetComponentData(beamEntity, new Scale()
+                {
+                    Value = new float3(50, 2000, 50)
+                });
+            }
+        }
+        else if(Input.GetMouseButtonUp(0))
+        {
+            var beamArray = beamGroup.GetEntityArray();
+            if(beamArray.Length > 0)
+            {
+                EntityManager.DestroyEntity(beamArray[0]);
+            }
+        }
         
         float fov = player.camera.m_Lens.FieldOfView;
         if(boost)
@@ -89,5 +126,42 @@ public class PlayerSystem : ComponentSystem
         }
         player.camera.m_Lens.FieldOfView = fov;
 
+        float percent = playerStats.enemiesDestroyed / (float)Bootstraper.NUM_OF_ENEMIES;
+        int newWeaponIndex = playerStats.currnetWeaponIndex;
+        for (int i = 0; i < Bootstraper.neededPercentForNextWeapon.Length; i++)
+        {
+            if(percent >= Bootstraper.neededPercentForNextWeapon[i])
+            {
+                newWeaponIndex = i;
+            }
+        }
+        if(newWeaponIndex != playerStats.currnetWeaponIndex)
+        {
+            playerStats.currnetWeaponIndex = newWeaponIndex;
+        }
+        EntityManager.SetComponentData(playerEntity, playerStats);
+    }
+
+    void shootBullet(float3 position, quaternion rotation)
+    {
+        var bullet = EntityManager.CreateEntity(Bootstraper.bulletTypes);
+        EntityManager.SetComponentData(bullet, new Position()
+        {
+            Value = position
+        });
+        EntityManager.SetComponentData(bullet, new Rotation()
+        {
+            Value = rotation
+        });
+        EntityManager.SetComponentData(bullet, new Scale()
+        {
+            Value = new float3(3, 3, 3)
+        });
+        EntityManager.SetSharedComponentData(bullet, bulletRenderer);
+        EntityManager.SetComponentData(bullet, new Bullet()
+        {
+            speed = 100,
+            timeToDestroy = 2f
+        });
     }
 }

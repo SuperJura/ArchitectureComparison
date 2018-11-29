@@ -12,13 +12,17 @@ public class SpawnerSystem : ComponentSystem
 {
     ComponentGroup group;
     static MeshInstanceRenderer enemyRenderer;
+    static float3 endPosition;
+    Unity.Mathematics.Random rng;
 
     protected override void OnUpdate()
     {
         if(enemyRenderer.mesh == null)
         {
             enemyRenderer = Bootstraper.getLookFromPrototype("Enemy");
-            group = GetComponentGroup(Bootstraper.spawnerArchtype.ComponentTypes);
+            group = GetComponentGroup(Bootstraper.spawnerTypes);
+            endPosition = GameObject.Find("SpaceStation").transform.position;
+            rng = new Unity.Mathematics.Random(234567891);
         }
 
         var entities = group.GetEntityArray();
@@ -53,10 +57,27 @@ public class SpawnerSystem : ComponentSystem
             }
             else
             {
-                var enemy = EntityManager.CreateEntity(Bootstraper.enemyArchtype);
-                EntityManager.SetComponentData(enemy, new Position() {Value = new float3(locationsData[i].Value.x, locationsData[i].Value.y, locationsData[i].Value.z)});
+                var enemy = EntityManager.CreateEntity(Bootstraper.getArchetype(Bootstraper.enemyTypes));
+                float3 spawnerPosition = new float3(locationsData[i].Value.x, locationsData[i].Value.y, locationsData[i].Value.z);
+                float3 dir = spawnerPosition - endPosition;
+                float3 farawayPosition = (spawnerPosition + dir) * 2;
+                EntityManager.SetComponentData(enemy, new Position() 
+                {
+                    Value = farawayPosition
+                });
+                EntityManager.SetComponentData(enemy, new Rotation()
+                {
+                    Value = quaternion.LookRotationSafe(endPosition - spawnerPosition, math.up())
+                });
+                EntityManager.SetComponentData(enemy, new Enemy()
+                {
+                    speed = rng.NextFloat(0.1f, 0.5f),
+                    targetLocation = endPosition,
+                    spawnerLocation = spawnerPosition,
+                    wentToSpawner = 0
+                });
                 EntityManager.SetSharedComponentData(enemy, enemyRenderer);
-                EntityManager.SetComponentData(enemy, new Scale(){Value = new float3(10, 10, 10)});
+                EntityManager.SetComponentData(enemy, new Scale(){Value = new float3(15, 15, 15)});
                 EntityManager.RemoveComponent(entityData[i], typeof(Spawner));
             }
         }

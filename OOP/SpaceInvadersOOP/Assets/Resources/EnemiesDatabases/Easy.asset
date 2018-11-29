@@ -13,7 +13,4 @@ MonoBehaviour:
   m_Name: Easy
   m_EditorClassIdentifier: 
   enemies:
-  - {fileID: 7996068660114481516, guid: d44c093b34f08974aaf1ae74e9df8599, type: 3}
-  - {fileID: 6464569143740627519, guid: eb85ee92f52138141bb259c4d4e3b482, type: 3}
-  - {fileID: 8292160473643160625, guid: 829b877bb66de2d43afe103dfd9ee10d, type: 3}
-  - {fileID: 6959943704710905887, guid: 0ce2feb86b4c9fb49b5df9d588ab0d48, type: 3}
+  - {fileID: 3687868399447169147, guid: f4224a2d6dbd9034a9a52f8917ad20fd, type: 3}
