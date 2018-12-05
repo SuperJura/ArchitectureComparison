@@ -27,12 +27,32 @@ public class EnemySystem : ComponentSystem
         var enemyStats = group.GetComponentDataArray<Enemy>();
         var playerEntity = playerGroup.GetEntityArray()[0];
         var playerStats = playerGroup.GetComponentDataArray<PlayerStats>()[0];
+        var playerRotation = playerGroup.GetComponentDataArray<Rotation>()[0];
+        var playerPosition = playerGroup.GetComponentDataArray<Position>()[0];
+        var beamArray = beamGroup.GetEntityArray();
+        var beamStats = beamGroup.GetComponentDataArray<Beam>();
 
         var bulletPositions = bulletsGroup.GetComponentDataArray<Position>();
 
         NativeList<Entity> toDestroy = new NativeList<Entity>(Allocator.Temp);
+
+        bool justDestroy = false;
+        if(beamStats.Length == 1 && playerStats.currnetWeaponIndex == 2)
+        {
+            var stat = beamStats[0];
+            if(math.clamp(stat.timeSinceStarted, 0, stat.maxScale) >= stat.maxScale)
+            {
+                justDestroy = true;
+            }
+        }
         for (int i = 0; i < enemyEntities.Length; i++)
         {
+            if(justDestroy)
+            {
+                toDestroy.Add(enemyEntities[i]);
+                playerStats.enemiesDestroyed++;
+                continue;
+            }
             bool wentToSpawner = enemyStats[i].wentToSpawner == 1;
             if(!wentToSpawner)
             {
@@ -53,19 +73,43 @@ public class EnemySystem : ComponentSystem
             };
             EntityManager.SetComponentData(enemyEntities[i], enemyPositions[i]);
 
-            for (int j = 0; j < bulletPositions.Length; j++)
+
+
+            float3 dir = math.normalize(enemyPositions[i].Value - playerPosition.Value);
+            float dot = math.dot(math.forward(playerRotation.Value), dir);
+            if(dot >= 0.997)
             {
-                float3 a = enemyPositions[i].Value;
-                float3 b =  bulletPositions[j].Value;
-                float x = a.x > b.x ? (a.x - b.x) : (b.x - a.x);
-                float y = a.y > b.y ? (a.y - b.y) : (b.y - a.y);
-                float z = a.z > b.z ? (a.z - b.z) : (b.z - a.z);
-                float distance = x + y + z;
-                if(distance < 200)
+                if(beamArray.Length > 0)
                 {
                     toDestroy.Add(enemyEntities[i]);
                     playerStats.enemiesDestroyed++;
                 }
+            }
+            else if(dot >= 0.6)
+            {
+                for (int j = 0; j < bulletPositions.Length; j++)
+                {
+                    float3 a = enemyPositions[i].Value;
+                    float3 b =  bulletPositions[j].Value;
+                    float x = a.x > b.x ? (a.x - b.x) : (b.x - a.x);
+                    float y = a.y > b.y ? (a.y - b.y) : (b.y - a.y);
+                    float z = a.z > b.z ? (a.z - b.z) : (b.z - a.z);
+                    float distance = x + y + z;
+                    if(distance < 200)
+                    {
+                        bool add = true;
+                        for (int k = 0; k < toDestroy.Length; k++)
+                        {
+                            if(toDestroy[k].Index == enemyEntities[i].Index) add = false;
+                        }
+                        if(add)
+                        {
+                            toDestroy.Add(enemyEntities[i]);
+                            playerStats.enemiesDestroyed++;
+                        }
+                    }
+                }
+
             }
         }
         if(toDestroy.Length > 0)

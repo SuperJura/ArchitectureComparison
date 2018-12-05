@@ -38,7 +38,12 @@ public struct Bullet : IComponentData
     public float timeToDestroy;
 }
 
-public struct Beam : IComponentData { }
+public struct Beam : IComponentData
+{
+    public float timeSinceStarted;
+    public float maxScale;
+    public float scaleSpeed;
+}
 
 public struct UI : ISharedComponentData
 {

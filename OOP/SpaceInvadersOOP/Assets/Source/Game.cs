@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
-    public const int NUM_OF_ENEMIES = 5000;
+    public const int NUM_OF_ENEMIES = 11000;
     IPlayer player;
     IInput device;
     InterfaceManager uiManager;
