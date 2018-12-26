@@ -7,7 +7,18 @@ public class ComponentMoveForward : Component
 
 public class ComponentMoveToInput : Component
 {
+    public float agility;
+}
 
+public class ComponentFireToInput : Component
+{
+    public int currentWeaponIndex;
+    public float shootCooldown;
+}
+
+public class ComponentGlobalPlayerStats : Component
+{
+    public int numOfEnemiesDestroyed;
 }
 
 public class ComponentsTransform : Component

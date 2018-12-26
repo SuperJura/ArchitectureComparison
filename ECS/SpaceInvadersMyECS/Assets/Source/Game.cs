@@ -9,6 +9,7 @@ public class Game : MonoBehaviour
         EntityManager.init();
         initEnemyShips();
         initTargetShip();
+        initPlayer();
         initSystems();
     }
 
@@ -60,9 +61,43 @@ public class Game : MonoBehaviour
         }
     }
 
+    void initPlayer()
+    {
+        var player = Instantiate(Resources.Load<GameObject>("Player"));
+        var entity = EntityManager.createNewEntity(new Component[]
+        {
+            new ComponentsTransform()
+            {
+                transform = player.transform
+            },
+            new ComponentMoveToInput()
+            {
+                agility = 10f,
+            },
+            new ComponentGlobalPlayerStats()
+            {
+                numOfEnemiesDestroyed = 0
+            },
+            new ComponentFireToInput()
+            {
+                currentWeaponIndex = 1,
+                shootCooldown = 0
+            },
+            new ComponentMoveForward()
+            {
+                speed = 0.5f
+            }
+        });
+        
+        Cinemachine.CinemachineVirtualCamera camera = GameObject.Instantiate(Resources.Load<Cinemachine.CinemachineVirtualCamera>("Camera"));
+        camera.Follow = player.transform;
+        camera.LookAt = player.transform;
+    }
+
     void initSystems()
     {
         EntityManager.registerSystem(new SystemMoveForward());
         EntityManager.registerSystem(new SystemEnemySetup());
+        EntityManager.registerSystem(new SystemInputMove());
     }
 }
