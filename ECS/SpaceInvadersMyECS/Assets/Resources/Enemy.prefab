@@ -1,5 +1,32 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!65 &5973239029568806438
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1944196104228866676}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 6.2326937, y: 2.142075, z: 8.560917}
+  m_Center: {x: -0.0000010728836, y: -0.3129055, z: 1.3906335}
+--- !u!114 &3075628560460124998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1944196104228866676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8454dea81c99f5a4881ca3355dd793a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tag: 0
+  numOfDestroyedEnemies: 0
 --- !u!1001 &1944196104228900052
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -69,3 +96,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 07979db94cdf6d9469e5a65953a41801, type: 3}
+--- !u!1 &1944196104228866676 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 07979db94cdf6d9469e5a65953a41801,
+    type: 3}
+  m_PrefabInstance: {fileID: 1944196104228900052}
+  m_PrefabAsset: {fileID: 0}

@@ -1,22 +1,23 @@
 using UnityEngine;
+using static EntityManager;
 
 public class SystemInputMove : ISystem
 {
     Component[] filter = new Component[]
     {
-        new ComponentsTransform(),
+        new ComponentTransform(),
         new ComponentMoveToInput()
     };
 
     public void update()
     {
-        var entities = EntityManager.getEntities(filter);
+        var entities = getEntities(filter);
         for (int i = 0; i < entities.Count; i++)
         {
-            var components = EntityManager.getComponents(entities[i]);
-            var transform = EntityManager.GetComponent<ComponentsTransform>(components);
-            var moveStats = EntityManager.GetComponent<ComponentMoveToInput>(components);
-            var moveForward = EntityManager.GetComponent<ComponentMoveForward>(components);
+            var components = getComponents(entities[i]);
+            var transform = getComponent<ComponentTransform>(components);
+            var moveStats = getComponent<ComponentMoveToInput>(components);
+            var moveForward = getComponent<ComponentMoveForward>(components);
 
             Vector3 moveDir = transform.transform.forward;
             Quaternion rotation = transform.transform.rotation;

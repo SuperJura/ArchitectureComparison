@@ -1,33 +1,40 @@
 using UnityEngine;
+using static EntityManager;
 
 public class SystemEnemySetup : ISystem
 {
     Component[] targetComponentsFilter = new Component[]
     {
         new ComponentTargetShip(),
-        new ComponentsTransform()
+        new ComponentTransform()
     };
     Component[] enemiesToSetupFilter = new Component[]
     {
         new ComponentEnemySetup(),
-        new ComponentsTransform()
+        new ComponentTransform()
     };
 
     public void update()
     {
-        var enemyEntities = EntityManager.getEntities(enemiesToSetupFilter);
+        var enemyEntities = getEntities(enemiesToSetupFilter);
         if(enemyEntities.Count == 0) return;
-        var entityTarget = EntityManager.getEntities(targetComponentsFilter)[0];
-        var targetPosition = EntityManager.GetComponent<ComponentsTransform>(EntityManager.getComponents(entityTarget)).transform;
+        var entityTarget = getEntities(targetComponentsFilter)[0];
+        var targetPosition = getComponent<ComponentTransform>(getComponents(entityTarget)).transform;
 
         for (int i = 0; i < enemyEntities.Count; i++)
         {
-            var components = EntityManager.getComponents(enemyEntities[i]);
-            var transform = EntityManager.GetComponent<ComponentsTransform>(components);
-            var setup = EntityManager.GetComponent<ComponentEnemySetup>(components);
+            var components = getComponents(enemyEntities[i]);
+            var transform = getComponent<ComponentTransform>(components);
+            var setup = getComponent<ComponentEnemySetup>(components);
             transform.transform.position = setup.position;
             transform.transform.LookAt(targetPosition);
-            EntityManager.removeComponent(enemyEntities[i], setup);
+            transform.transform.GetComponent<CollisionRule>().thisEntity = enemyEntities[i];
+
+            addComponent(enemyEntities[i], new ComponentEnemyFlyTo()
+            {
+                position = setup.flyToPosition
+            });
+            removeComponent(enemyEntities[i], setup);
         }
     }
 }

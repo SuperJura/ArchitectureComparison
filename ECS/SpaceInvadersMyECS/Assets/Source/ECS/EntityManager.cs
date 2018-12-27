@@ -40,6 +40,16 @@ public static class EntityManager
         return entity;
     }
 
+    public static void destroyEntity(Entity entity)
+    {
+        ComponentTransform transform = getComponent<ComponentTransform>(getComponents(entity));
+        if(transform != null)
+        {
+            GameObject.Destroy(transform.transform.gameObject);
+        }
+        entities.Remove(entity);
+    }
+
     public static bool addComponent(Entity entity, Component component)
     {
         if(!entities[entity].Contains(component))
@@ -68,7 +78,7 @@ public static class EntityManager
         return entities[entity];
     }
 
-    public static T GetComponent<T>(HashSet<Component> components) where T : Component
+    public static T getComponent<T>(HashSet<Component> components) where T : Component
     {
         foreach (var component in components)
         {
@@ -77,15 +87,22 @@ public static class EntityManager
         return null;
     }
 
-    public static List<Entity> getEntities(params Component[] components)
+    public static T getFirstComponent<T>(Component[] filter) where T : Component
+    {
+        var entities = getEntities(filter);
+        var components = getComponents(entities[0]);
+        return getComponent<T>(components);
+    }
+
+    public static List<Entity> getEntities(params Component[] filter)
     {
         List<Entity> output = new List<Entity>(entities.Count);
         foreach (var pair in entities)
         {
             bool add = true;
-            for (int i = 0; i < components.Length; i++)
+            for (int i = 0; i < filter.Length; i++)
             {
-                if(!pair.Value.Contains(components[i]))
+                if(!pair.Value.Contains(filter[i]))
                 {
                     add = false;
                     break;
