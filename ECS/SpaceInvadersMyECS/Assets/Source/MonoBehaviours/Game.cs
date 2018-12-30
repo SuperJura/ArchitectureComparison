@@ -3,11 +3,12 @@ using UnityEngine.UI;
 
 public class Game : MonoBehaviour 
 {
-    public const int NUM_OF_ENEMIES = 1000;
+    public const int NUM_OF_ENEMIES = 9000;
 
-    public static GameObject BULLET_TEMPLATE;
     public static GameObject ENEMY_TEMPLATE;
-    public static readonly float[] neededPercentForNextWeapon = new float[] {0.01f, 0.02f, 0.09f};
+    public static GameObject BULLET_TEMPLATE;
+    public static GameObject BEAM_TEMPLATE;
+    public static readonly float[] neededPercentForNextWeapon = new float[] {0.01f, 0.02f, 0.06f};
 
     GameObject targetShip;
 
@@ -29,8 +30,9 @@ public class Game : MonoBehaviour
 
     void initTemplates()
     {
-        BULLET_TEMPLATE = Resources.Load<GameObject>("Bullet");
         ENEMY_TEMPLATE = Resources.Load<GameObject>("Enemy");
+        BULLET_TEMPLATE = Resources.Load<GameObject>("Bullet");
+        BEAM_TEMPLATE = Resources.Load<GameObject>("Beam");
     }
 
     void initTargetShip()
@@ -72,7 +74,8 @@ public class Game : MonoBehaviour
                 {
                     position = pos + dir,
                     flyToPosition = pos
-                }
+                },
+                new ComponentEnemy()
             });
         }
     }
@@ -96,7 +99,6 @@ public class Game : MonoBehaviour
             },
             new ComponentFireToInput()
             {
-                currentWeaponIndex = 0,
                 shootCooldown = 0
             },
             new ComponentMoveForward()

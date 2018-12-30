@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class EntityManager
@@ -9,12 +10,16 @@ public static class EntityManager
     static Dictionary<Entity, HashSet<Component>> entities;
     static List<ISystem> systems;
 
+    static Dictionary<Type, int> componentCodes;
+    static int nextCode = 1;
+
     public static void init()
     {
         if(inited) return;
         
         entities = new Dictionary<Entity, HashSet<Component>>();
         systems = new List<ISystem>();
+        componentCodes = new Dictionary<Type, int>();
 
         inited = true;
     }
@@ -52,6 +57,12 @@ public static class EntityManager
 
     public static bool addComponent(Entity entity, Component component)
     {
+        var componentType = component.GetType();
+        if(!componentCodes.ContainsKey(componentType))
+        {
+            componentCodes.Add(componentType, nextCode);
+            nextCode *= 2;
+        }
         if(!entities[entity].Contains(component))
         {
             entities[entity].Add(component);

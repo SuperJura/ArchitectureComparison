@@ -13,7 +13,6 @@ public class ComponentMoveToInput : Component
 
 public class ComponentFireToInput : Component
 {
-    public int currentWeaponIndex;
     public float shootCooldown;
     public bool shootRight;
 }
@@ -24,8 +23,13 @@ public class ComponentBullet : Component
     public float liveTime;
 }
 
+public class ComponentBeam : Component
+{
+    public float timeStarted;
+}
+
 public class ComponentDestroy : Component
-{ }
+{}
 
 public class ComponentGlobalPlayerStats : Component
 {
@@ -43,13 +47,16 @@ public class ComponentEnemySetup : Component
     public Vector3 flyToPosition;
 }
 
+public class ComponentEnemy : Component
+{}
+
 public class ComponentEnemyFlyTo : Component
 {
     public Vector3 position;
 }
 
 public class ComponentTargetShip : Component
-{ }
+{}
 
 public class ComponentUI : Component
 {

@@ -23,25 +23,20 @@ public class SystemUI : ISystem
             var components = getComponents(entities[j]);
             var ui = getComponent<ComponentUI>(components);
             
-            int currentPercent = -1;
-            int neededPercent = 0;
+            int currentIndex = GameHelper.getCurrentWeaponIndex(globalStats.numOfEnemiesDestroyed);
             float percent = globalStats.numOfEnemiesDestroyed / (float)Game.NUM_OF_ENEMIES;
-            for (int i = 0; i < Game.neededPercentForNextWeapon.Length - 1; i++)
-            {
-                if (percent >= Game.neededPercentForNextWeapon[i])
-                {
-                    currentPercent = i;
-                    neededPercent = i + 1;
-                }
-            }
             float fill = 0;
-            if(currentPercent == -1)
+            if(currentIndex == -1)
             {
                 fill = Math.getPercentBetween(percent, 0, Game.neededPercentForNextWeapon[0]);
             }
+            else if (currentIndex < 2)
+            {
+                fill = Math.getPercentBetween(percent, Game.neededPercentForNextWeapon[currentIndex], Game.neededPercentForNextWeapon[currentIndex + 1]);
+            }
             else
             {
-                fill = Math.getPercentBetween(percent, Game.neededPercentForNextWeapon[currentPercent], Game.neededPercentForNextWeapon[neededPercent]);
+                fill = 1;
             }
             ui.expBar.fillAmount = fill;
         }

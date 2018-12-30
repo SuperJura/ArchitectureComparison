@@ -1,1 +1,2 @@
-﻿public class Component{}
+﻿public class Component
+{}
