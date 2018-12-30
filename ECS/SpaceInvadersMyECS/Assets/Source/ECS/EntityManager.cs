@@ -7,7 +7,8 @@ using UnityEngine;
 public static class EntityManager
 {
     static bool inited = false;
-    static Dictionary<Entity, HashSet<Component>> entities;
+    static Dictionary<Entity, int> entitiesCache;
+    static Dictionary<Entity, HashSet<Component>> entitiesData;
     static List<ISystem> systems;
 
     static Dictionary<Type, int> componentCodes;
@@ -17,7 +18,8 @@ public static class EntityManager
     {
         if(inited) return;
         
-        entities = new Dictionary<Entity, HashSet<Component>>();
+        entitiesCache = new Dictionary<Entity, int>();
+        entitiesData = new Dictionary<Entity, HashSet<Component>>();
         systems = new List<ISystem>();
         componentCodes = new Dictionary<Type, int>();
 
@@ -35,7 +37,8 @@ public static class EntityManager
     public static Entity createNewEntity(params Component[] components)
     {
         Entity entity = new Entity();
-        entities.Add(entity, new HashSet<Component>(new ComponentComparer()));
+        entitiesCache.Add(entity, 0);
+        entitiesData.Add(entity, new HashSet<Component>());
 
         for (int i = 0; i < components.Length; i++)
         {
@@ -52,7 +55,8 @@ public static class EntityManager
         {
             GameObject.Destroy(transform.transform.gameObject);
         }
-        entities.Remove(entity);
+        entitiesCache.Remove(entity);
+        entitiesData.Remove(entity);
     }
 
     public static bool addComponent(Entity entity, Component component)
@@ -60,12 +64,13 @@ public static class EntityManager
         var componentType = component.GetType();
         if(!componentCodes.ContainsKey(componentType))
         {
-            componentCodes.Add(componentType, nextCode);
-            nextCode *= 2;
+			addNewComponentCache(component);
         }
-        if(!entities[entity].Contains(component))
+        int componentId = componentCodes[componentType];
+        if((entitiesCache[entity] & componentId) == 0)
         {
-            entities[entity].Add(component);
+            entitiesCache[entity] += componentId;
+            entitiesData[entity].Add(component);
         }
         else
         {
@@ -77,28 +82,31 @@ public static class EntityManager
 
     public static bool removeComponent(Entity entity, Component component)
     {
-        if(!entities.ContainsKey(entity)) return false;
-        if(!entities[entity].Contains(component)) return false;
-        entities[entity].Remove(component);
+        if(!entitiesCache.ContainsKey(entity)) return false;
+        int componentId = componentCodes[component.GetType()];
+        if((entitiesCache[entity] & componentId) == 0) return false;
+        entitiesCache[entity] -= componentId;
+        entitiesData[entity].Remove(component);
         return true;
     }
 
     public static HashSet<Component> getComponents(Entity entity)
     {
-        if(!entities.ContainsKey(entity)) return null;
-        return entities[entity];
+        if(!entitiesCache.ContainsKey(entity)) return null;
+        return entitiesData[entity];
     }
 
     public static T getComponent<T>(HashSet<Component> components) where T : Component
     {
-        foreach (var component in components)
+		var type = typeof(T);
+		foreach (var component in components)
         {
-            if(component.GetType() == typeof(T)) return (T)component;
+            if(component.GetType() == type) return (T)component;
         }
         return null;
     }
 
-    public static T getFirstComponent<T>(Component[] filter) where T : Component
+	public static T getFirstComponent<T>(Component[] filter) where T : Component
     {
         var entities = getEntities(filter);
         var components = getComponents(entities[0]);
@@ -107,19 +115,18 @@ public static class EntityManager
 
     public static List<Entity> getEntities(params Component[] filter)
     {
-        List<Entity> output = new List<Entity>(entities.Count);
-        foreach (var pair in entities)
+        List<Entity> output = new List<Entity>(entitiesCache.Count);
+        int filterCode = 0;
+        for (int i = 0; i < filter.Length; i++)
         {
-            bool add = true;
-            for (int i = 0; i < filter.Length; i++)
-            {
-                if(!pair.Value.Contains(filter[i]))
-                {
-                    add = false;
-                    break;
-                }
-            }
-            if(add)
+			var componentType = filter[i].GetType();
+			if (!componentCodes.ContainsKey(componentType)) return output;
+            filterCode += componentCodes[filter[i].GetType()];
+        }
+
+        foreach (var pair in entitiesCache)
+        {
+            if((pair.Value & filterCode) == filterCode)
             {
                 output.Add(pair.Key);
             }
@@ -132,6 +139,13 @@ public static class EntityManager
     {
         systems.Add(system);
     }
+
+	static void addNewComponentCache(Component component)
+	{
+		var componentType = component.GetType();
+		componentCodes.Add(componentType, nextCode);
+		nextCode *= 2;
+	}
 
     class ComponentComparer : IEqualityComparer<Component>
     {
