@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class LaserBullet : IBullet
+public class RifleBullet : IBullet
 {
     static GameObject laserBulletTemplate;
 

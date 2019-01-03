@@ -39,7 +39,7 @@ public class Beam : IWeapon
             }
             else
             {
-                float newScale = Mathf.Clamp(currentBeam.getObject().transform.localScale.x + Time.deltaTime, 1, maxScale);
+                float newScale = Mathf.Clamp(currentBeam.getObject().transform.localScale.x + Time.deltaTime * 5, 1, maxScale);
                 currentBeam.getObject().transform.localScale = new Vector3(newScale, newScale, 1);
                 if(Math.closeEnough(newScale, maxScale))
                 {

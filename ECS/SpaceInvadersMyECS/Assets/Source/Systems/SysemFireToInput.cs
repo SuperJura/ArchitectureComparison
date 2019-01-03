@@ -36,7 +36,6 @@ public class SystemFireToInput : ISystem
             var fireToInput = getComponent<ComponentFireToInput>(components);
             var transform = getComponent<ComponentTransform>(components);
 
-            //TODO: nastavi raditi nove weapone
             int weaponIndex = GameHelper.getCurrentWeaponIndex(globalStats.numOfEnemiesDestroyed);
             if(weaponIndex == -1 || weaponIndex == 0)
             {
@@ -81,7 +80,6 @@ public class SystemFireToInput : ISystem
                 }
                 else if(Input.GetMouseButtonUp(0))
                 {
-                    Debug.Log("destroyt");
                     if(beams.Count > 0)
                     {
                         for (int j = 0; j < beams.Count; j++)
@@ -108,6 +106,7 @@ public class SystemFireToInput : ISystem
                         {
                             if(Mathf.Approximately(scaleMultiplyer, maxScale))
                             {
+                                PerformanceTest.finish();
                                 var allEnemies = getEntities(enemyFilter);
                                 for (int k = 0; k < allEnemies.Count; k++)
                                 {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
-    public const int NUM_OF_ENEMIES = 11000;
+    public const int NUM_OF_ENEMIES = 25000;
     IPlayer player;
     IInput device;
     InterfaceManager uiManager;
@@ -15,11 +15,12 @@ public class Game : MonoBehaviour
 
     public int enemyDestroyed = 0;
     
-    public readonly float[] neededPercentForNextWeapon = new float[] {0.01f, 0.2f, 0.9f};
+    public readonly float[] neededPercentForNextWeapon = new float[] {0.01f, 0.02f, 0.06f};
     public int currnetWeaponIndex = -1;
 
     void Start()
     {
+        PerformanceTest.init();
         player = new Singleplayer();
         device = new PCInputDevice();
         uiManager = new InterfaceManager();
@@ -32,6 +33,7 @@ public class Game : MonoBehaviour
 
     void Update()
     {
+        PerformanceTest.update();
         device.updateDevice();
         player.updatePlayer();
 
@@ -89,6 +91,7 @@ public class Game : MonoBehaviour
             {
                 player.changeWeapon(new Beam(50, () =>
                 {
+                    PerformanceTest.finish();
                     foreach(var spawner in spawners)
                     {
                         spawner.destroy();

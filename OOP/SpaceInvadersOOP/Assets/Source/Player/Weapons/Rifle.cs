@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Rifle : IWeapon
 {
-    readonly IBullet DEFAULT_BULLET = new LaserBullet();
+    readonly IBullet DEFAULT_BULLET = new RifleBullet();
     IBullet bullet;
     float lastShotTime = -1;
     float cooldown;

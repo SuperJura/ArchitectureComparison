@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class Game : MonoBehaviour 
 {
-    public const int NUM_OF_ENEMIES = 15000;
+    public const int NUM_OF_ENEMIES = 25000;
 
     public static GameObject ENEMY_TEMPLATE;
     public static GameObject BULLET_TEMPLATE;
@@ -14,6 +14,7 @@ public class Game : MonoBehaviour
 
     void Start()
     {
+        PerformanceTest.init();
         EntityManager.init();
         initTemplates();
         initTargetShip();
@@ -25,6 +26,7 @@ public class Game : MonoBehaviour
 
     void Update()
     {
+        PerformanceTest.update();
         EntityManager.update();
     }
 

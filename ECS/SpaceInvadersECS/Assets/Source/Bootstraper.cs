@@ -24,6 +24,7 @@ public class Bootstraper
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void init()
     {
+        PerformanceTest.init();
         manager = World.Active.GetOrCreateManager<EntityManager>();
 
         spawnerTypes = new ComponentType[] { typeof(Position), typeof(Spawner)};

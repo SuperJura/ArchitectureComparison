@@ -42,6 +42,7 @@ public class EnemySystem : ComponentSystem
             var stat = beamStats[0];
             if(math.clamp(stat.timeSinceStarted, 0, stat.maxScale) >= stat.maxScale)
             {
+                PerformanceTest.finish();
                 justDestroy = true;
             }
         }
