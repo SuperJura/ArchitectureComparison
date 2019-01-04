@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
-    public const int NUM_OF_ENEMIES = 25000;
+    public const int NUM_OF_ENEMIES = 3000;
     IPlayer player;
     IInput device;
     InterfaceManager uiManager;
@@ -22,7 +22,11 @@ public class Game : MonoBehaviour
     {
         PerformanceTest.init();
         player = new Singleplayer();
+#if UNITY_ANDROID && !UNITY_EDITOR
+        device = new TouchInputDevice();
+#else
         device = new PCInputDevice();
+#endif
         uiManager = new InterfaceManager();
 
         player.init(GameObject.Find("Player"), device);

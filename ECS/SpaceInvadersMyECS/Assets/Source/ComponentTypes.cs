@@ -9,6 +9,8 @@ public class ComponentMoveForward : Component
 public class ComponentMoveToInput : Component
 {
     public float agility;
+    public Vector3 startTouchPosition;
+    public Vector3 currentTouchPosition;
 }
 
 public class ComponentFireToInput : Component

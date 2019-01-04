@@ -24,10 +24,33 @@ public class SystemInputMove : ISystem
 
             float rotationSpeed = 2;
             Vector3 newEulerRotation = Vector3.zero;
+#if UNITY_ANDROID && !UNITY_ENGINE
+            if(Input.touchCount == 0)
+            {
+                moveStats.startTouchPosition = moveStats.currentTouchPosition = Vector3.zero;
+                return;
+            }
+            Touch touch = Input.GetTouch(0);
+            if(touch.phase == TouchPhase.Began)
+            {
+                moveStats.startTouchPosition = touch.position;
+            }
+            moveStats.currentTouchPosition = touch.position;
+
+            float horizontal = (moveStats.currentTouchPosition - moveStats.startTouchPosition).x * Time.deltaTime;
+            horizontal = Mathf.Clamp(horizontal, -1, 1);
+            
+            float vertical = (moveStats.currentTouchPosition - moveStats.startTouchPosition).y * Time.deltaTime;
+            vertical = Mathf.Clamp(vertical, -1, 1);
+
+            newEulerRotation.x += vertical * moveStats.agility * -Time.deltaTime;
+            newEulerRotation.y += horizontal * moveStats.agility * Time.deltaTime;
+#else
             if (Input.GetKey(KeyCode.A)) { newEulerRotation.y -= rotationSpeed * moveStats.agility * Time.deltaTime; }
             if (Input.GetKey(KeyCode.D)) { newEulerRotation.y += rotationSpeed * moveStats.agility * Time.deltaTime; }
             if (Input.GetKey(KeyCode.W)) { newEulerRotation.x -= rotationSpeed * moveStats.agility * Time.deltaTime; }
             if (Input.GetKey(KeyCode.S)) { newEulerRotation.x += rotationSpeed * moveStats.agility * Time.deltaTime; }
+#endif
 
             rotation = rotation * Quaternion.AngleAxis(newEulerRotation.y, Vector3.up);
             rotation = rotation * Quaternion.AngleAxis(newEulerRotation.x, Vector3.right);

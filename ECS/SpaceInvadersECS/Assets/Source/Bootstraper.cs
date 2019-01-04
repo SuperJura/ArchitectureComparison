@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class Bootstraper
 {
-    public const int NUM_OF_ENEMIES = 25000;
+    public const int NUM_OF_ENEMIES = 2500;
     public static readonly float[] neededPercentForNextWeapon = new float[] {0.01f, 0.02f, 0.09f};
 
     public static ComponentType[] spawnerTypes;

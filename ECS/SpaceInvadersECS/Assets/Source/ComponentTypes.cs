@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 using UnityEngine.UI;
 
 public struct Spawner : IComponentData 
@@ -21,6 +22,8 @@ public struct Player : ISharedComponentData
 {
     public UnityEngine.GameObject cameraPoint;
     public Cinemachine.CinemachineVirtualCamera camera;
+    public Vector3 currentTouchPosition;
+    public Vector3 startTouchPosition;
 }
 
 public struct PlayerStats : IComponentData

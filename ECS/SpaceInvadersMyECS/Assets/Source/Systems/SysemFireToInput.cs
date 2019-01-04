@@ -36,12 +36,20 @@ public class SystemFireToInput : ISystem
             var fireToInput = getComponent<ComponentFireToInput>(components);
             var transform = getComponent<ComponentTransform>(components);
 
+#if UNITY_ANDROID && !UNITY_ENGINE
+            var doFire = Input.touchCount >= 2;
+            var stopFire = !doFire;
+#else
+            var doFire = Input.GetMouseButtonDown(0);
+            var stopFire = Input.GetMouseButtonUp(0);
+#endif
+
             int weaponIndex = GameHelper.getCurrentWeaponIndex(globalStats.numOfEnemiesDestroyed);
             if(weaponIndex == -1 || weaponIndex == 0)
             {
                 fireToInput.shootCooldown -= Time.deltaTime;
                 bool canFire = weaponIndex == 0 || (weaponIndex == -1 && fireToInput.shootCooldown <= 0);
-                if(Input.GetMouseButton(0) && canFire)
+                if(doFire && canFire)
                 {
                     var goTransform = transform.transform;
                     createNewBullet(goTransform.position + goTransform.right * 6, transform.transform.rotation);
@@ -52,7 +60,7 @@ public class SystemFireToInput : ISystem
             else if(weaponIndex == 1 || weaponIndex == 2)
             {
                 var beams = getEntities(beamFilter);
-                if(Input.GetMouseButtonDown(0))
+                if(doFire)
                 {
                     if(beams.Count == 0)
                     {
@@ -78,7 +86,7 @@ public class SystemFireToInput : ISystem
                         });
                     }
                 }
-                else if(Input.GetMouseButtonUp(0))
+                else if(stopFire)
                 {
                     if(beams.Count > 0)
                     {

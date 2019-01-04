@@ -38,10 +38,34 @@ public class PlayerSystem : ComponentSystem
 
         float rotationSpeed = 2;
         Vector3 newEulerRotation = Vector3.zero;
+#if UNITY_ANDROID && !UNITY_EDITOR
+        if(Input.touchCount > 0)
+        {
+            var touch = Input.GetTouch(0);
+            if(touch.phase == TouchPhase.Began)
+            {
+                player.startTouchPosition = touch.position;
+            }
+            player.currentTouchPosition = touch.position;
+        }
+        else
+        {
+            player.startTouchPosition = player.currentTouchPosition = Vector3.zero;
+        }
+        float horizontal = (player.currentTouchPosition - player.startTouchPosition).x * Time.deltaTime;
+        horizontal = Mathf.Clamp(horizontal, -1, 1);
+        
+        float vertical = (player.currentTouchPosition - player.startTouchPosition).y * Time.deltaTime;
+        vertical = Mathf.Clamp(vertical, -1, 1);
+
+        newEulerRotation.y += vertical * playerStats.agility * -Time.deltaTime;
+        newEulerRotation.x += horizontal * playerStats.agility * Time.deltaTime;
+#else
         if (Input.GetKey(KeyCode.A)) { newEulerRotation.y -= rotationSpeed * playerStats.agility * Time.deltaTime; }
         if (Input.GetKey(KeyCode.D)) { newEulerRotation.y += rotationSpeed * playerStats.agility * Time.deltaTime; }
         if (Input.GetKey(KeyCode.W)) { newEulerRotation.x -= rotationSpeed * playerStats.agility * Time.deltaTime; }
         if (Input.GetKey(KeyCode.S)) { newEulerRotation.x += rotationSpeed * playerStats.agility * Time.deltaTime; }
+#endif
 
         rotation = math.mul(rotation, quaternion.AxisAngle(math.up(), newEulerRotation.y));
         rotation = math.mul(rotation, quaternion.AxisAngle(new float3(1, 0, 0), newEulerRotation.x));
@@ -58,8 +82,13 @@ public class PlayerSystem : ComponentSystem
 
         player.cameraPoint.transform.position = new Vector3(newPosition.x, newPosition.y, newPosition.z);
         player.cameraPoint.transform.rotation = rotation;
+        EntityManager.SetSharedComponentData(playerEntity, player);
 
+#if UNITY_ANDROID && !UNITY_EDITOR
+        if (Input.touchCount >= 2)
+#else
         if (Input.GetMouseButton(0))
+#endif
         {
             if(playerStats.currnetWeaponIndex == -1)
             {

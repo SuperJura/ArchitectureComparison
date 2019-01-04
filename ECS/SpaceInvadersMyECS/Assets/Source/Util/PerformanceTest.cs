@@ -73,7 +73,7 @@ public static class PerformanceTest
 
         Debug.Log("Min FPS: " + minFPS);
         Debug.Log("Max FPS: " + maxFPS);
-        Debug.Log("Average FPS in 5 first frames: " + averageFPSInFirst5Frames);
+        Debug.Log("Average FPS in 10 first frames: " + averageFPSInFirst5Frames);
         Debug.Log("Average FPS: " + averageFPS);
         Debug.Log("Max CPU usage: " + maxCPUUsage);
         Debug.Log("Average CPU usage: " + averageCPUUsage);
