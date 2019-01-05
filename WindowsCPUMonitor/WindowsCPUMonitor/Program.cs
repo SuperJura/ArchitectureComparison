@@ -15,7 +15,6 @@ namespace WindowsCPUMonitor
 		static int iterations = 0;
 		static void Main(string[] args)
 		{
-			Console.WriteLine(Environment.ProcessorCount);
 			var cpuCounter = new PerformanceCounter();
 			cpuCounter.CategoryName = "Process";
 			cpuCounter.CounterName = "% Processor Time";
