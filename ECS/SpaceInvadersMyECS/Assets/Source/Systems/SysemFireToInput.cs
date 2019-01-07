@@ -36,11 +36,11 @@ public class SystemFireToInput : ISystem
             var fireToInput = getComponent<ComponentFireToInput>(components);
             var transform = getComponent<ComponentTransform>(components);
 
-#if UNITY_ANDROID && !UNITY_ENGINE
+#if UNITY_ANDROID && !UNITY_EDITOR
             var doFire = Input.touchCount >= 2;
             var stopFire = !doFire;
 #else
-            var doFire = Input.GetMouseButtonDown(0);
+            var doFire = Input.GetMouseButton(0);
             var stopFire = Input.GetMouseButtonUp(0);
 #endif
 

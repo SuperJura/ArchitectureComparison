@@ -140,6 +140,11 @@ public static class EntityManager
         systems.Add(system);
     }
 
+    public static void cancelSystem(ISystem system)
+    {
+        systems.Remove(system);
+    }
+
 	static void addNewComponentCache(Component component)
 	{
 		var componentType = component.GetType();

@@ -24,7 +24,7 @@ public class SystemInputMove : ISystem
 
             float rotationSpeed = 2;
             Vector3 newEulerRotation = Vector3.zero;
-#if UNITY_ANDROID && !UNITY_ENGINE
+#if UNITY_ANDROID && !UNITY_EDITOR
             if(Input.touchCount == 0)
             {
                 moveStats.startTouchPosition = moveStats.currentTouchPosition = Vector3.zero;
