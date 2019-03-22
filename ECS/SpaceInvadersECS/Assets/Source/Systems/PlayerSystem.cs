@@ -67,8 +67,8 @@ public class PlayerSystem : ComponentSystem
         if (Input.GetKey(KeyCode.S)) { newEulerRotation.x += rotationSpeed * playerStats.agility * Time.deltaTime; }
 #endif
 
-        rotation = math.mul(rotation, quaternion.AxisAngle(math.up(), newEulerRotation.y));
-        rotation = math.mul(rotation, quaternion.AxisAngle(new float3(1, 0, 0), newEulerRotation.x));
+        rotation = math.mul(rotation, quaternion.AxisAngle(new float3(1, 0, 0), newEulerRotation.y));
+        rotation = math.mul(rotation, quaternion.AxisAngle(math.up(), newEulerRotation.x));
 
         playerRotation.Value = rotation;
         EntityManager.SetComponentData(playerEntity, playerRotation);
